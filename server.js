@@ -6,7 +6,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
 const { validationResult, ValidationError } = require('express-validator');
-const pool = require('./config/db');  // Configuración de la base de datos
+const pool = require('./config/db'); // Configuración de la base de datos
 const authRoutes = require('./routes/authRoutes'); // Rutas de autenticación
 const reservaRoutes = require('./routes/reservaRoutes'); // Rutas para reservas
 const camRoutes = require('./routes/camRoutes'); // Rutas para mensajes de contacto
@@ -32,7 +32,7 @@ app.use('/api/cam', camRoutes); // Rutas para mensajes de contacto
 
 // Sirviendo el frontend en producción
 if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, '../frontend/dist')));
+    app.use(express.static(path.resolve(__dirname, '../frontend/dist')));
 
     app.get('*', (req, res) => {
         res.sendFile(path.resolve(__dirname, '../frontend/dist', 'index.html'));
