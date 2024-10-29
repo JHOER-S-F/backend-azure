@@ -12,9 +12,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend  # Ajustar si backend está en una subcarpeta
 
     steps:
       - uses: actions/checkout@v4
@@ -24,14 +21,14 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: npm install
-        run: npm install
-
-      - name: Run tests
-        run: npm test
+      - name: npm install, build, and test
+        run: |
+          npm install
+          npm run build --if-present
+          npm run test --if-present
 
       - name: Zip artifact for deployment
-        run: zip -r release.zip .
+        run: zip release.zip ./* -r
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -46,7 +43,7 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write
+      id-token: write #This is required for requesting the JWT
 
     steps:
       - name: Download artifact from build job
@@ -56,13 +53,13 @@ jobs:
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
-
+      
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_A56302EEAA3B49C2961E754783733A95 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_6EF614CF5ABD4A208CC0338334203D83 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_6C748FBE91F1407EB15D3F035BA97ADB }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_BA10F078C5A3435BAE5D51B8240BF773 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D3F015BAD40947E0B30B28CC414952DA }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_DDE5CA6E2FA24E8CBB7B16D548BEEE48 }}
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
@@ -71,3 +68,4 @@ jobs:
           app-name: 'BackendSoccerBook'
           slot-name: 'Production'
           package: .
+          
